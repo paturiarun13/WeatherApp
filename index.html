@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="cities.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const images = document.querySelectorAll('.accordion-image');
+            const prevButton = document.querySelector('.accordion-button.prev');
+            const nextButton = document.querySelector('.accordion-button.next');
+            let currentIndex = 0;
+
+            function updateAccordion(index) {
+                images.forEach((image, i) => {
+                    image.classList.toggle('active', i === index);
+                });
+            }
+
+            prevButton.addEventListener('click', () => {
+                currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+                updateAccordion(currentIndex);
+            });
+
+            nextButton.addEventListener('click', () => {
+                currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+                updateAccordion(currentIndex);
+            });
+
+            function autoSlide() {
+                currentIndex = (currentIndex + 1) % images.length; // Move to the next image (loop back to the start)
+                updateAccordion(currentIndex);
+            }
+
+            // Start auto-sliding every 3 seconds
+            setInterval(autoSlide, 3000);
+
+
+
+            // Initialize the first image as active
+            updateAccordion(currentIndex);
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const API_BASE_URL = "https://api.open-meteo.com/v1/forecast";
+
+            const citySelect = document.getElementById("city-select");
+            const weatherInfo = document.getElementById("weather-info");
+            const cityName = document.getElementById("city-name");
+            const temperature = document.getElementById("temperature");
+            const humidity = document.getElementById("humidity");
+            const rain = document.getElementById("rain");
+            const windSpeed = document.getElementById("wind-speed");
+            const messageContainer = document.getElementById("message-container");
+
+            // Function to fetch and display weather data
+            function fetchWeather(selectedCity, cityText) {
+                const [latitude, longitude] = selectedCity.split(",");
+
+                // Fetch data from Open-Meteo API
+                fetch(`${API_BASE_URL}?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=relativehumidity_2m,precipitation`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch weather data");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const weather = data.current_weather;
+                        const hourlyHumidity = data.hourly.relativehumidity_2m[0]; // First hour's humidity
+                        const hourlyRain = data.hourly.precipitation[0]; // First hour's rain
+
+                        weatherInfo.style.display = "block";
+                        cityName.textContent = `City: ${cityText}`;
+                        temperature.textContent = `Temperature: ${weather.temperature}°C`;
+                        humidity.textContent = `Humidity: ${hourlyHumidity}%`;
+                        rain.textContent = `Rain: ${hourlyRain} mm`;
+                        windSpeed.textContent = `Wind Speed: ${weather.windspeed} km/h`;
+
+                        // Display the message for the selected city
+                        displayMessage(cityText.toLowerCase());
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            }
+
+            // Function to display city-specific message
+            function displayMessage(city) {
+                const message = cityMessages[city] || "No message available for this city.";
+                messageContainer.innerHTML = message;
+            }
+
+            // Set Hyderabad as the default city
+            const defaultCity = "17.3850,78.4867"; // Coordinates for Hyderabad
+            const defaultCityText = "Hyderabad";
+
+            citySelect.value = defaultCity; // Set default selection
+            fetchWeather(defaultCity, defaultCityText); // Fetch weather for Hyderabad
+
+            // Fetch weather on city change
+            citySelect.addEventListener("change", () => {
+                const selectedCity = citySelect.value;
+                if (!selectedCity) {
+                    weatherInfo.style.display = "none";
+                    messageContainer.textContent = "";
+                    return;
+                }
+                const cityText = citySelect.options[citySelect.selectedIndex].text;
+                fetchWeather(selectedCity, cityText);
+            });
+            
+        });
+        function toggleAboutSection() {
+            const aboutSection = document.getElementById('aboutSection');
+            aboutSection.classList.toggle('show');
+        }
+       
+    
+    </script>
+    
+</head>
+<body>
+    <section class="image-accordion">
+        <button class="accordion-button prev">⟨</button>
+        <div class="accordion-images">
+            <div class="accordion-image active">
+                <img src="../public/one.jpg" alt="Image 1">
+                <div class="image-container">
+                    <div class="text-overlay">
+                        <h1>Weather App</h1>
+                        <p>Make Life Simple</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-image">
+                <img src="../public/two.jpg" alt="Image 2">
+                <div class="text-overlay">
+                    <h1>Cricket chirps</h1>
+                    <p>
+                        The frequency of cricket chirps can indicate the air temperature. Count the number of chirps in 15 seconds and add 37 to estimate the temperature
+                    </p>
+                </div>
+            </div>
+            <div class="accordion-image">
+                <img src="../public/ten.jpg" alt="Image 3">
+                <div class="text-overlay">
+                    <h1>Rain Drops</h1>
+                    <p>
+                        Raindrops fall at a speed of 7–18 miles per hour in still air, depending on their size. Air friction breaks up raindrops that exceed 18 miles per hour
+                    </p>
+                </div>
+            </div>
+            <div class="accordion-image">
+                <img src="../public/eleven.jpg" alt="Image 4">
+                <div class="text-overlay">
+                    <h1>Lightning</h1>
+                    <p>
+                        Lightning can destroy trees by heating and electrically disrupting their tissue
+                    </p>
+                </div>
+            </div>
+            <div class="accordion-image">
+                <img src="../public/five.jpg" alt="Image 5">
+                <div class="text-overlay">
+                    <h1>Thunderstorms</h1>
+                    <p>
+                        On average, 1,800 thunderstorms are active at any given time, producing 100 lightning strikes per second.
+                    </p>
+                </div>
+            </div>
+            <div class="accordion-image">
+                <img src="../public/six.jpg" alt="Image 6">
+                <div class="text-overlay">
+                    <h1>Global Temperature</h1>
+                    <p>
+                        Since 1880, the average global temperature has increased by 1.7°F (0.94°C)
+                    </p>
+                </div>
+            </div>
+            <div class="accordion-image">
+                <img src="../public/nine.jpg" alt="Image 7">
+                <div class="text-overlay">
+                    <h1>Avalanches</h1>
+                    <p>
+                        Noise doesn't trigger avalanches, but weight is a significant factor. Other factors that can trigger avalanches include a sudden increase in snow or wind speed
+                    </p>
+                </div>
+            </div>
+        </div>
+        <button class="accordion-button next">⟩</button>
+    </section>
+    <div class="container">
+        <div class="box left">
+            <h1>Weather App for Indian Cities</h1>
+            <select id="city-select">
+                <option value="" disabled selected>Select a city</option>
+                <option value="28.6139,77.2090">Delhi</option>
+                <option value="19.0760,72.8777">Mumbai</option>
+                <option value="12.9716,77.5946">Bangalore</option>
+                <option value="13.0827,80.2707">Chennai</option>
+                <option value="22.5726,88.3639">Kolkata</option>
+                <option value="17.3850,78.4867">Hyderabad</option>
+                <option value="18.5204,73.8567">Pune</option>
+                <option value="10.8505,76.2711">Kochi</option>
+                <option value="17.6801,83.2016">Vizag</option>
+            </select>
+
+
+            <div id="weather-info">
+                <h2>Weather Details</h2>
+                <p id="city-name"></p>
+                <p id="temperature"></p>
+                <p id="wind-speed"></p>
+                <p id="condition"></p>
+                <p id="humidity"></p>
+                <p id="rain"></p>
+            </div>
+
+        </div>
+        <div class="box right">
+            <p id="message-container"></p>
+        </div>
+
+    </div>
+    <footer>
+        <div class="footer-content">
+            <ul class="footer-links">
+                <li><a href="mailto:pathuriarunkumar652@gmail.com">Contact Us</a></li>
+                <li><a href="javascript:void(0)" onclick="toggleAboutSection('aboutSection')">About</a></li>
+                <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
+                <li><a href="https://www.linkedin.com/in/arunkumar-pathuri-1b52b1219/" target="_blank">LinkedIn</a></li>
+            </ul>
+            <div id="aboutSection" class="about-section">
+                <p>
+                    The Weather App is your one-stop solution for real-time weather updates for major cities across India.
+                    Built with precision and a user-friendly interface, it provides detailed weather conditions, including
+                    temperature, humidity, wind speed, and rain forecasts. Our mission is to help you stay informed and plan your day better.
+                    Whether you’re preparing for your daily commute, a weekend getaway, or simply curious about the weather,
+                    this app ensures you have all the information you need, right at your fingertips. Powered by reliable
+                    weather APIs and a seamless design, it’s built for both convenience and accuracy.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
